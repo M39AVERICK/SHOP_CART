@@ -1,0 +1,8 @@
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<form name="razorpayform" method="POST" action="{% url 'payment:verify' %}">
+    {% csrf_token %}
+    <input type="hidden" name="razorpay_payment_id" />
+    <input type="hidden" name="razorpay_order_id" />
+    <input type="hidden" name="razorpay_signature" />
+    <input type="submit" value="Pay" />
+</form>

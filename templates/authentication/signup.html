@@ -1,0 +1,39 @@
+{% extends 'base_auth.html' %}
+{% block title %}SIGNUP-PAGE{%endblock%}
+{% block  content %}
+{% for message in messages %}
+<div class="alert alert-{{message.tags}} alert-dismissible fade show" role="alert">
+    <strong>{{message}}</strong>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endfor %}
+<div class="card bg-light p-3 m-1">
+    
+    <h1 class="text-danger text-center">SignUp</h1>
+   
+    <form action="/userdata/signup/" method="POST">
+    {% csrf_token %}
+    <br>
+    <label for="email">Email</label>
+    <div class="form-group">
+        <input type="email" class="form-control" id="email" name="email" required>
+    </div>
+    <br>
+    <label for="pass1">Password</label>
+    <div class="form-group">
+        <input type="password" class="form-control" id="pass1" name="pass1" required>
+    </div>
+    <label for="pass2"> Confirm Password</label>
+    <div class="form-group">
+        <input type="password"class="form-control"  name="pass2" id="pass2" required>
+    </div>
+    <br>
+    <button type="submit" class=" btn btn-danger form-control">Create Account</button>
+    <br>
+    <br>
+    Already User? <a  class="btn btn-outline-primary" href="{% url 'login' %}">Login</a>
+    
+    </form>
+    </div>
+    
+{% endblock %}

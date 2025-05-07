@@ -1,0 +1,226 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Homepage{% endblock %}
+
+{% block user %} {% endblock %}
+
+{% block content %}
+
+<!-- Products Section -->
+<section id="portfolio" class="portfolio section">
+
+    <!-- Section Title -->
+    <div class="container section-title text-center" data-aos="fade-up">
+        <h2 class="text-primary mt-3 fw-bold" id="output"></h2>
+        <h3>Check Our <span class="text-success fw-bold">Products</span></h3>
+    </div>
+
+    {% for product, range, nslides in alldata %}
+    <h3 class="my-4 text-center text-light bg-dark p-2 rounded">{{ product.0.P_category }} FlashSale</h3>
+
+    <div class="container">
+        <div class="row justify-content-center">
+            {% for i in product %}
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="card shadow-sm border-0 rounded">
+                    <a href="/explain/{{ i.id }}">
+                        <img src="{{ i.p_image.url }}" class="card-img-top img-fluid rounded-top" alt="{{ i.P_name }}" style="height: 250px; object-fit: cover;">
+                    </a>
+                    <div class="card-body bg-light">
+                        <h5 class="card-title text-dark fw-bold" id="namepr{{ i.id }}">{{ i.P_name }}</h5>
+                        <p class="card-text text-muted">{{ i.P_desc | slice:'0:55' }}...</p>
+                        <h6 class="text-success">Price: <span id="pricepr{{ i.id }}">{{ i.p_price }}</span> Rs</h6>
+                        <div class="d-flex justify-content-between mt-3" id="cart-btn{{ i.id }}">
+                           <div class="container-fluid"> <button id="{{ i.id }}" class="btn btn-primary cartadd">Add to Cart</button>
+                            <a href="{{ i.p_image.url }}" class="btn btn-dark">View</a></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+
+</section>
+<link rel="stylesheet" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+
+      <!-- Include only one jQuery and Bootstrap version -->
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let cart = JSON.parse(localStorage.getItem("cart")) || {};
+    updateCart(cart);
+
+    // Handle "Add to Cart" Button Click
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("cartadd")) {
+            let id = event.target.id;
+            addToCart(id);
+        }
+    });
+
+    // Handle "Increment Item" Button Click
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("add-item")) {
+            let id = event.target.dataset.id;
+            addToCart(id);
+        }
+    });
+
+    // Handle "Decrement Item" Button Click
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("remove-item")) {
+            let id = event.target.dataset.id;
+            removeFromCart(id);
+        }
+    });
+
+    function addToCart(id) {
+        const nameElem = document.getElementById("namepr" + id);
+        const priceElem = document.getElementById("pricepr" + id);
+
+        if (nameElem && priceElem) {
+            const name = nameElem.innerText;
+            const price = parseFloat(priceElem.innerText);
+
+            if (cart[id]) {
+                cart[id].qty += 1;
+            } else {
+                cart[id] = { qty: 1, name: name, price: price };
+            }
+
+            localStorage.setItem("cart", JSON.stringify(cart));
+            updateCart(cart);
+            updateButton(id);
+        }
+    }
+
+    function removeFromCart(id) {
+        if (cart[id]) {
+            cart[id].qty -= 1;
+            if (cart[id].qty <= 0) {
+                delete cart[id];
+            }
+        }
+        localStorage.setItem("cart", JSON.stringify(cart));
+        updateCart(cart);
+        updateButton(id);
+    }
+
+    function updateButton(id) {
+        let itemContainer = document.getElementById("cart-btn" + id);
+
+        if (!itemContainer) {
+            console.warn(`Element with id 'cart-btn${id}' not found. Skipping update.`);
+            return;
+        }
+
+        if (cart[id]) {
+            itemContainer.innerHTML = `
+                <button class="remove-item btn btn-light btn-sm" data-id="${id}">➖</button>
+                <span class="item-qty">${cart[id].qty}</span>
+                <button class="add-item btn btn-light btn-sm" data-id="${id}">➕</button>
+            `;
+        } else {
+            itemContainer.innerHTML = `<button id="${id}" class="btn btn-primary cartadd">Add to Cart</button>`
+                
+        }
+    }
+
+    function updatePopover(cart) {
+        let popStr = `<h5><b>Cart Items</b></h5>`;
+        let i = 1, total = 0;
+
+        let cartContent = `<div id="cart-content" style="height: 250px; overflow-y: auto; padding: 5px;">`;
+        for (const item in cart) {
+            const itemTotal = cart[item].price * cart[item].qty;
+            cartContent += `<b>${i}.</b> ${cart[item].name.slice(0, 19)}... 
+                            <b>${cart[item].qty} Qty</b> ${itemTotal} Rs <br>
+                            <b>Amount per item ${cart[item].price}</b><br>`;
+            total += itemTotal;
+            i++;
+        }
+        cartContent += `</div>`;
+
+        popStr += cartContent;
+        popStr += `<br><h5><b>Total: ${total} Rs</b></h5><br>`;
+        popStr += `<a <button class="clear-cart btn btn-danger"><i class="fa fa-remove"></i> Clear Cart</button></a>&nbsp`;
+        popStr += `<a href="{% url 'check' %}" class="checkout btn btn-outline-success " ><i class="fas fa-shopping-cart"></i>CheckOut</a>`;
+
+        let popcart = document.getElementById("popcart");
+        if (popcart) {
+            let popoverInstance = bootstrap.Popover.getInstance(popcart);
+            if (popoverInstance) {
+                popoverInstance.dispose();
+            }
+            popcart.setAttribute("data-bs-content", popStr);
+            new bootstrap.Popover(popcart, { trigger: "manual", html: true });
+        }
+    }
+
+    function updateCart(cart) {
+        let sum = Object.values(cart).reduce((acc, item) => acc + item.qty, 0);
+        let cartElem = document.getElementById("cart");
+        if (cartElem) cartElem.innerText = sum;
+        updatePopover(cart);
+    }
+
+    function clearCart() {
+        localStorage.removeItem("cart");
+        cart = {};
+        updateCart(cart);
+        document.querySelectorAll(".cartadd").forEach(button => {
+            let id = button.id;
+            updateButton(id);
+        });
+        let popoverInstance = bootstrap.Popover.getInstance(document.getElementById("popcart"));
+        if (popoverInstance) {
+            popoverInstance.hide();
+        }
+    }
+
+    // Clear Cart Event Listener
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("clear-cart")) {
+            event.preventDefault();
+            clearCart();
+        }
+    });
+
+    // Show/Hide Popover Cart
+    document.addEventListener("click", function (event) {
+        if (event.target.id === "popcart") {
+            let popcart = document.getElementById("popcart");
+            let popoverInstance = bootstrap.Popover.getInstance(popcart);
+
+            if (popoverInstance) {
+                popoverInstance.toggle();
+            } else {
+                updatePopover(cart);
+            }
+        }
+    });
+
+    for (const id in cart) {
+        updateButton(id);
+    }
+});
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+        
+{% endblock %}

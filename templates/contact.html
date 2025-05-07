@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block title %}Contact Us{% endblock %}
+{% block content %}
+
+<h1 class="text-center text-primary mt-4">Contact Us</h1>    
+
+<div class="container mt-4 text-primary">
+  <div class="row">
+    <div class="col-md-6">
+      <!-- Contact Form -->
+      <div class="bg-light p-4 rounded shadow-sm">
+        <form action="{% url 'contact' %}" method="POST">
+          {% csrf_token %}
+          
+          <div class="form-group mb-3">
+            <label for="uname">Full Name</label>
+            <input type="text" class="form-control text-danger" id="uname" name="uname" required>
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="email">Email</label>
+            <input type="email" class="form-control text-danger" id="email" name="email" required>
+          </div>
+
+          <div class="form-group mb-3">
+            <label for="help">How Can We Help You?</label>
+            <textarea class="form-control text-danger" id="help" name="help" rows="3" required></textarea>
+          </div>
+
+          <div class="form-group mb-4">
+            <label for="mobile">Mobile No.</label>
+            <input type="number" class="form-control" name="mobile" id="mobile" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100">📨 Submit</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <!-- Support & Communication -->
+      <div class="p-4 bg-light rounded shadow-sm">
+        <h4>Support & Communication</h4>
+        <a href="{% url 'refund_policy' %}" class="btn btn-outline-secondary w-100 mb-4">📄 Return & Refund Policy</a>
+
+        <form action="{% url 'raise_ticket' %}" method="POST">
+          {% csrf_token %}
+          <input name="name" placeholder="Your Name" class="form-control mb-2" required>
+          <input name="email" placeholder="Your Email" class="form-control mb-2" required>
+          <textarea name="message" placeholder="Describe your issue..." class="form-control mb-3" rows="3" required></textarea>
+          <button type="submit" class="btn btn-success w-100">📝 Submit Support Ticket</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

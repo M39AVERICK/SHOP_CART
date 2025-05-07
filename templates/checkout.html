@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout Page{% endblock %}
+
+{% block content %}
+
+<section id="checkout" class="checkout section">
+    <div class="container">
+        <div class="section-title text-center" data-aos="fade-up">
+            <h2 class="btn btn-success">Checkout</h2>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h2 class="text-center my-4"><b>Review Your Cart Items</b></h2>
+                <ul class="list-group" id="items"></ul>
+
+                <div class="alert alert-info mt-3">
+                    <p>Your Cart Total Amount: <b><span id="total">0</span> INR</b></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <h2 class="my-4">Enter Address & Payment Details</h2>
+                <form method="post" action="{% url 'check' %}" id="payment-form" class="p-4 border rounded bg-light">
+                    {% csrf_token %}
+                    <input type="hidden" name="itemjson" id="itemjson">
+                    <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+                    
+                    <div class="mb-3">
+                        <label for="amt" class="form-label">Amount (INR)</label>
+                        <input type="number" id="amt" name="amt" class="form-control" required readonly>
+                    </div>
+                
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" name="email" class="form-control" required>
+                    </div>
+                
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input type="text" id="name" name="name" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="phone" class="form-label">Phone Number</label>
+                            <input type="number" id="phone" name="phone" class="form-control" required>
+                        </div>
+                    </div>
+                
+                    <div class="mb-3">
+                        <label for="address" class="form-label">Delivery Address</label>
+                        <input type="text" id="address" name="address" class="form-control" required>
+                    </div>
+                
+                    <div class="mb-3">
+                        <label for="pincode" class="form-label">Pincode</label>
+                        <input type="number" id="pincode" name="pincode" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="State/City" class="form-label">State/City</label>
+                        <input type="text" id="City" name="City" class="form-control" required>
+                    </div>
+                    
+                
+                    <div class="mb-3">
+                        <label for="payment-method" class="form-label">Select Payment Method</label>
+                        <select id="payment-method" name="payment-method" class="form-control">
+                            <option value="online">Online Payment</option>
+                            <option value="cod">Cash on Delivery (COD) + ₹50</option>
+                        </select>
+                    </div>
+                
+                    <button type="button" id="rzp-button1" class="btn btn-success w-100">Proceed to Payment</button>
+                </form>
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    let cart = JSON.parse(localStorage.getItem('cart')) || {};
+    let totalprice = 0;
+    let discount = 0;
+    let deliveryCharge = 50;
+    const validCoupons = { "DISCOUNT10": 10, "OFF200": 200 };
+
+    if (Object.keys(cart).length === 0) {
+        document.getElementById('items').innerHTML = '<p class="text-danger">Your cart is empty!</p>';
+    } else {
+        let i = 1;
+        for (let item in cart) {
+            let name = cart[item].name;
+            let qty = cart[item].qty;
+            let itemprice = cart[item].price;
+            totalprice += qty * itemprice;
+
+            let mystr = `<li class="list-group-item d-flex justify-content-between">
+                            <b>${i}</b> - <b>${name}</b> (Qty: ${qty}, Price: ${itemprice})
+                        </li>`;
+            document.getElementById('items').insertAdjacentHTML('beforeend', mystr);
+            i++;
+        }
+    }
+
+    document.getElementById('total').textContent = totalprice;
+    document.getElementById('amt').value = totalprice + deliveryCharge;
+
+    document.getElementById('apply-coupon').addEventListener('click', function () {
+        let couponCode = document.getElementById('coupon').value.trim().toUpperCase();
+        if (validCoupons[couponCode]) {
+            discount = validCoupons[couponCode];
+            document.getElementById('discount-info').textContent = `Coupon Applied! ₹${discount} Off`;
+        } else {
+            discount = 0;
+            document.getElementById('discount-info').textContent = 'Invalid Coupon Code';
+        }
+        updateFinalAmount();
+    });
+
+    document.getElementById('payment-method').addEventListener('change', function () {
+        let paymentMethod = this.value;
+        deliveryCharge = (paymentMethod === 'cod') ? 50 : 0;
+        updateFinalAmount();
+    });
+
+    function updateFinalAmount() {
+        let finalAmount = totalprice + deliveryCharge - discount;
+        document.getElementById('amt').value = finalAmount;
+        options.amount = finalAmount * 100;
+        rzp1 = new Razorpay(options);
+    }
+
+    
+</script>
+<script>
+    document.getElementById("itemjson").value = JSON.stringify(cart);
+
+    var options = {
+        "key": "rzp_test_96NFN1CuVxcyzR",
+        "amount": (totalprice + deliveryCharge - discount) * 100,
+        "currency": "INR",
+        "name": "Shop Cart",
+        "description": "Order Payment",
+        "handler": function (response) {
+            document.getElementById("razorpay_payment_id").value = response.razorpay_payment_id;
+            document.getElementById("payment-form").submit();
+        },
+        "theme": { "color": "#28a745" }
+    };
+
+    var rzp1 = new Razorpay(options);
+    document.getElementById('rzp-button1').onclick = function (e) {
+        e.preventDefault();
+        let selectedPayment = document.getElementById("payment-method").value;
+
+        if (selectedPayment === "cod") {
+            alert("Order placed successfully! You will pay ₹" + document.getElementById("amt").value + " on delivery.");
+            document.getElementById("payment-form").submit();
+        } else {
+            rzp1.open();
+        }
+    };
+</script>
+
+
+{% endblock %}
