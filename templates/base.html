@@ -32,53 +32,62 @@
 
 <body class="index-page">
 
-  <!-- ======= Header ======= -->
+  <!-- ======= Header / Navbar ======= -->
   <header id="header" class="header fixed-top bg-light shadow-sm">
     <div class="container-fluid">
       <nav class="navbar navbar-expand-lg navbar-light">
-        <div class="container-fluid">
-          <a class="navbar-brand fw-bold text-primary" href="/">Shop Cart</a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
-            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
-            <ul class="navbar-nav gap-2">
-              <li class="nav-item"><a class="btn btn-light text-primary" href="{% url 'index' %}">Home</a></li>
-              <li class="nav-item"><a class="btn btn-light text-primary" href="#">Blog</a></li>
-              <li class="nav-item"><a class="btn btn-light text-primary" href="{% url 'about' %}">About</a></li>
-              <li class="nav-item dropdown">
-                <a class="btn btn-light text-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Orders</a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="{% url 'success' %}">Your Orders</a></li>
-                  <li><a class="dropdown-item" href="{% url 'profile' %}">Track Order</a></li>
-                </ul>
-              </li>
-              <li class="nav-item">
-                <button class="btn btn-danger" id="popcart" data-bs-toggle="popover" data-bs-placement="bottom"
-                  data-bs-html="true" data-bs-content="">Cart (<span id="cart">0</span>)</button>
-              </li>
-              <li class="nav-item"><a class="btn btn-light text-primary" href="{% url 'profile' %}">My Profile</a></li>
+        <a class="navbar-brand fw-bold text-primary" href="/">Shop Cart</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
+          aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
 
-              {% if request.user.is_authenticated %}
-              <li class="nav-item">
-                <a href="{% url 'logout' %}" class="btn btn-light text-primary">Logout {{ user.first_name }}</a>
-              </li>
-              {% else %}
-              <li class="nav-item dropdown">
-                <a href="#" class="btn btn-light text-danger dropdown-toggle" data-bs-toggle="dropdown">Sign In</a>
-                <ul class="dropdown-menu">
-                  <li><a href="{% url 'signup' %}" class="dropdown-item">Sign Up</a></li>
-                  <li><a href="{% url 'login' %}" class="dropdown-item">Log In</a></li>
-                </ul>
-              </li>
-              {% endif %}
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNavDropdown">
+          <ul class="navbar-nav gap-2">
+            <li class="nav-item">
+              <a class="btn btn-light text-primary w-100 text-start" href="{% url 'index' %}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-light text-primary w-100 text-start" href="#">Blog</a>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-light text-primary w-100 text-start" href="{% url 'about' %}">About</a>
+            </li>
+            <li class="nav-item dropdown">
+              <a class="btn btn-light text-primary dropdown-toggle w-100 text-start" href="#" role="button" data-bs-toggle="dropdown">
+                Orders
+              </a>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="{% url 'success' %}">Your Orders</a></li>
+                <li><a class="dropdown-item" href="{% url 'profile' %}">Track Order</a></li>
+              </ul>
+            </li>
+            <li class="nav-item">
+              <button class="btn btn-danger w-100 text-start" id="popcart" data-bs-toggle="popover" data-bs-placement="bottom"
+                data-bs-html="true" data-bs-content="">Cart (<span id="cart">0</span>)</button>
+            </li>
+            <li class="nav-item">
+              <a class="btn btn-light text-primary w-100 text-start" href="{% url 'profile' %}">My Profile</a>
+            </li>
 
-              <li class="nav-item">
-                <a href="{% url 'contact' %}" class="btn btn-primary text-white"><i class="fas fa-envelope"></i> Contact Us</a>
-              </li>
-            </ul>
-          </div>
+            {% if request.user.is_authenticated %}
+            <li class="nav-item">
+              <a href="{% url 'logout' %}" class="btn btn-light text-primary w-100 text-start">Logout {{ user.first_name }}</a>
+            </li>
+            {% else %}
+            <li class="nav-item dropdown">
+              <a href="#" class="btn btn-light text-danger dropdown-toggle w-100 text-start" data-bs-toggle="dropdown">Sign In</a>
+              <ul class="dropdown-menu">
+                <li><a href="{% url 'signup' %}" class="dropdown-item">Sign Up</a></li>
+                <li><a href="{% url 'login' %}" class="dropdown-item">Log In</a></li>
+              </ul>
+            </li>
+            {% endif %}
+
+            <li class="nav-item">
+              <a href="{% url 'contact' %}" class="btn btn-primary text-white w-100 text-start"><i class="fas fa-envelope"></i> Contact Us</a>
+            </li>
+          </ul>
         </div>
       </nav>
     </div>
@@ -203,7 +212,7 @@
   <script src="{% static 'assets/vendor/swiper/swiper-bundle.min.js' %}"></script>
   <script src="{% static 'assets/js/main.js' %}"></script>
 
-  <!-- Optional jQuery -->
+  <!-- jQuery (Optional) -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </body>
 
